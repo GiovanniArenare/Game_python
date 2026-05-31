@@ -1,15 +1,14 @@
-# Nome do Jogo
+# Nome do Jogo: Sonica Runner
 
 Projeto final da disciplina de Introdução a Algoritmos/Programação, desenvolvido com Python e Pygame.
 
-Este repositório é um template para os grupos da disciplina. A proposta é começar com uma base funcional e evoluir o jogo ao longo do semestre.
+Este repositório utiliza o template oficial da disciplina para o desenvolvimento de um jogo estilo Infinite Runner (Corrida Infinita com Obstáculos), evoluindo o código de forma modular e organizada ao longo das semanas.
 
 ## Integrantes do grupo
 
-- Nome do integrante 1
-- Nome do integrante 2
-- Nome do integrante 3
-- Nome do integrante 4
+- Nome 1: Carolina Almeida Mendes de Souza
+- Nome 2: Giovanni Arenare Mota
+- Nome 3: Gustavo Alberto Araujo de Sa
 
 ## Estrutura do projeto
 
@@ -22,42 +21,24 @@ Este repositório é um template para os grupos da disciplina. A proposta é com
 
 ## Descrição do jogo
 
-Descreva brevemente a ideia principal do jogo.
-
-Exemplo:
-
-> O jogo consiste em controlar um personagem que deve coletar moedas e evitar obstáculos. O jogador ganha pontos ao coletar itens e perde vidas ao colidir com obstáculos. A partida termina quando o tempo acaba ou quando o jogador perde todas as vidas.
+O jogo consiste em controlar um personagem que corre automaticamente para a direita em um cenário contínuo. O jogador deve desviar de obstáculos terrestres e aéreos que surgem de forma aleatória na tela. A velocidade do jogo aumenta gradativamente conforme a pontuação sobe, tornando a sobrevivência mais desafiadora a cada segundo.
 
 ## Objetivo do jogador
 
-Explique o que o jogador precisa fazer para vencer ou avançar no jogo.
-
-Exemplo:
-
-> O objetivo é coletar a maior quantidade possível de itens antes que o tempo acabe, evitando colisões com os obstáculos.
+O objetivo principal é sobreviver pelo maior tempo possível na corrida, desviando dos perigos para acumular a maior pontuação e quebrar o recorde máximo (High Score) gravado no sistema.
 
 ## Regras do jogo
 
-Liste as principais regras do jogo.
-
-Exemplo:
-
-- O jogador se movimenta usando as setas do teclado.
-- Cada item coletado aumenta a pontuação.
-- Colidir com um obstáculo reduz a quantidade de vidas.
-- A partida termina quando o jogador perde todas as vidas ou quando o tempo acaba.
+- O jogador inicia a partida com um total de 3 vidas.
+- A pontuação aumenta continuamente enquanto o personagem permanecer vivo.
+- Colidir com qualquer obstáculo (terrestre ou aéreo) reduz 1 vida do jogador.
+- Itens especiais (moedas) aparecem esporadicamente e concedem um bônus de 100 pontos se coletados.
+- A partida termina (Game Over) imediatamente quando a quantidade de vidas chegar a zero.
 
 ## Controles
 
-Informe as teclas ou comandos utilizados no jogo.
-
-Exemplo:
-
-- Seta para cima: mover para cima
-- Seta para baixo: mover para baixo
-- Seta para esquerda: mover para esquerda
-- Seta para direita: mover para direita
-- Espaço: realizar ação
+- Seta para cima / Barra de Espaço: Faz o personagem pular (evita obstáculos terrestres).
+- Seta para baixo: Faz o personagem se abaixar (evita obstáculos aéreos).
 - ESC: sair do jogo
 
 ## Como executar o projeto
