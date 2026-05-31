@@ -8,126 +8,67 @@ A proposta deve apresentar uma ideia simples, clara e viável para ser desenvolv
 
 Escreva aqui o nome provisório do jogo.
 
-Exemplo:
-
-> Corrida dos Obstáculos
+> Sonica Runner
 
 ## 2. Integrantes do grupo
 
 Liste os integrantes do grupo.
 
-- Nome 1:
-- Nome 2:
-- Nome 3:
-- Nome 4:
+- Nome 1: Carolina Almeida Mendes de Souza
+- Nome 2: Giovanni Arenare Mota
+- Nome 3: Gustavo Alberto Araujo de Sa
 
 ## 3. Tipo de jogo
 
 Indique o tipo de jogo que será desenvolvido.
 
-Exemplos:
-
-- jogo de desviar de obstáculos;
-- jogo de coleta de itens;
-- labirinto simples;
-- jogo de perguntas e respostas;
-- jogo de memória;
-- Pong;
-- Snake;
-- Breakout;
-- nave desviando de meteoros;
-- corrida simples com obstáculos;
-- jogo de clique rápido;
-- jogo de sobrevivência simples.
-
 Tipo escolhido pelo grupo:
 
-> Escreva aqui.
+> Corrida simples com obstáculos (Infinite Runner)
 
 ## 4. Descrição geral do jogo
 
 Explique, em poucas linhas, como o jogo funcionará.
 
-Procure responder:
-
-- O que aparece na tela?
-- O que o jogador controla?
-- O que o jogador precisa fazer?
-- Quais desafios aparecem durante a partida?
-
 Descrição:
 
-> Escreva aqui.
+> O jogo se passa em um cenário bidimensional onde o fundo e o chão se movem continuamente para a esquerda, simulando que o personagem está correndo para a direita. Na tela, aparecerão o personagem principal, a pontuação atual, o recorde máximo e a quantidade de vidas. O jogador controla as ações de desvio do personagem. O objetivo é desviar dos obstáculos terrestres e aéreos que surgem aleatoriamente na tela. À medida que o tempo passa, a velocidade do cenário aumenta sutilmente, elevando o desafio.
 
 ## 5. Objetivo do jogador
 
 Explique qual é o objetivo principal do jogador.
 
-Exemplos:
-
-- coletar o maior número possível de itens;
-- sobreviver pelo maior tempo possível;
-- chegar até o final do labirinto;
-- acertar alvos;
-- responder perguntas corretamente;
-- evitar obstáculos;
-- quebrar todos os blocos.
-
 Objetivo:
 
-> Escreva aqui.
+> Sobreviver pelo maior tempo possível, evitando os obstáculos para acumular a maior pontuação e superar o recorde máximo (High Score) registrado.
 
 ## 6. Regras principais
 
 Liste as principais regras do jogo.
 
-Exemplo:
-
-- O jogador começa com 3 vidas.
-- Cada moeda coletada vale 10 pontos.
-- Cada colisão com obstáculo remove 1 vida.
-- A partida termina quando as vidas chegam a zero.
-- O jogador vence se alcançar 100 pontos.
-
 Regras do grupo:
 
-- Regra 1:
-- Regra 2:
-- Regra 3:
-- Regra 4:
-- Regra 5:
+- Regra 1: O jogador inicia a partida com vidas limitadas.
+- Regra 2: A pontuação aumenta de forma contínua com base no tempo de sobrevivência da corrida.
+- Regra 3: Cada colisão com um obstáculo remove 1 vida do jogador.
+- Regra 4: Após uma colisão, o jogador ganha um breve período de invulnerabilidade piscante para não perder todas as vidas de uma vez.
+- Regra 5: A velocidade de deslocamento dos obstáculos aumenta a cada derterminado marco de pontos atingidos.
 
 ## 7. Condição de vitória
 
 Explique como o jogador vence ou conclui o jogo.
 
-Exemplos:
-
-- atingir determinada pontuação;
-- chegar ao final da fase;
-- sobreviver até o tempo acabar;
-- responder uma quantidade mínima de perguntas;
-- quebrar todos os blocos.
-
 Condição de vitória:
 
-> Escreva aqui.
+> Por ser um jogo de corrida infinita, não há uma condição de vitória definitiva (fim de jogo por chegada). A vitória pessoal do jogador consiste em superar o recorde (High Score) salvo no sistema.
 
 ## 8. Condição de derrota ou encerramento
 
 Explique como o jogador perde ou quando a partida termina.
 
-Exemplos:
-
-- perder todas as vidas;
-- acabar o tempo;
-- colidir com determinado obstáculo;
-- errar muitas perguntas;
-- deixar a bola cair, no caso de Breakout ou Pong.
-
 Condição de derrota ou encerramento:
 
-> Escreva aqui.
+> A partida é encerrada imediatamente (Game Over) quando o contador de vidas do jogador chega a zero.
 
 ## 9. Elementos previstos no jogo
 
@@ -135,119 +76,63 @@ Descreva os principais elementos que farão parte do jogo.
 
 ## Jogador ou elemento principal
 
-Exemplo:
-
-> Um personagem controlado pelas setas do teclado.
-
 Descrição:
 
-> Escreva aqui.
+> Um personagem posicionado no canto esquerdo da tela que possui comandos para pular e abaixar, simulando a esquiva dos perigos. Ele interage diretamente com a física da gravidade simulada para o pulo.
 
 ## Obstáculos, inimigos ou desafios
 
-Exemplo:
-
-> Obstáculos aparecem em posições aleatórias e devem ser evitados.
-
 Descrição:
 
-> Escreva aqui.
+> Obstáculos terrestres estáticos (como cactos ou pedras) que exigem um pulo, e obstáculos aéreos em alturas variadas (como pássaros ou drones) que exigem que o jogador se abaixe ou calcule o tempo preciso do pulo.
 
 ## Itens, alvos ou objetos de interação
 
-Exemplo:
-
-> Moedas aparecem na tela e aumentam a pontuação quando coletadas.
-
 Descrição:
 
-> Escreva aqui.
+> Coelhos dourados que aparecem esporadicamente na pista e, se coletados, concedem um bônus imediato de 100 pontos.
 
 ## Pontuação, vidas, tempo ou progresso
 
-Exemplo:
-
-> O jogador começa com 3 vidas e ganha 10 pontos por item coletado.
-
 Descrição:
 
-> Escreva aqui.
+> O jogo exibirá na parte superior da tela: o Score Atual (inteiro que cresce com o tempo), o High Score (carregado de um arquivo externo) e a quantidade de vidas representadas por ícones de corações.
 
 ## 10. Controles previstos
 
 Informe os comandos que serão utilizados pelo jogador.
 
-Exemplo:
-
-- Seta para cima: mover para cima
-- Seta para baixo: mover para baixo
-- Seta para esquerda: mover para esquerda
-- Seta para direita: mover para direita
-- Espaço: realizar ação
-- ESC: sair do jogo
-
 Controles do grupo:
 
-- Tecla/comando:
-- Tecla/comando:
-- Tecla/comando:
+- Tecla/comando: Seta para Cima ou Espaço (Realizar o pulo do personagem.)
+- Tecla/comando: Seta para Baixo (Fazer o personagem se abaixar (reduzir sua caixa de colisão).)
+- Tecla/comando: ESC (Pausar ou sair do jogo.)
 
 ## 11. Organização inicial do código
 
-Explique como o grupo pretende organizar o código.
-
-Exemplo:
-
-- `main.py`: inicia o jogo;
-- `src/jogo.py`: contém o loop principal;
-- `src/config.py`: guarda configurações como tamanho da tela e cores;
-- `src/funcoes.py`: contém funções auxiliares;
-- `src/dados.py`: contém funções de leitura e escrita de arquivos.
-
-Organização planejada:
-
-> Escreva aqui.
+- `main.py` — ponto de entrada; inicializa o Pygame, cria a janela e chama o loop principal de src/jogo.py.
+- `src/jogo.py` — contém o loop principal (while running), controle de estados (menu, jogando, game over) e renderização de cada frame.
+- `src/funcoes.py` — funções auxiliares: detecção de colisão com pygame.Rect, cálculo de pontuação e aumento progressivo de velocidade.
+- `src/entidades.py` — classes Personagem (lógica de pulo e agachamento), Obstaculo (cactos e pássaros) e Chao (rolagem infinita).
+- `src/dados.py` — leitura e escrita do recorde em recorde.txt
 
 
 ## 12. Recursos externos previstos
 
-Informe se o grupo pretende utilizar imagens, sons, fontes, tutoriais ou códigos externos.
-
-Exemplo:
-
-- imagens obtidas de banco gratuito;
+- imagens feitas pelo grupo;
 - sons gratuitos;
 - tutorial usado apenas como referência;
-- fonte personalizada.
 
 Recursos previstos:
-
-> Escreva aqui.
-
-Caso não pretenda utilizar recursos externos, escreva:
 
 > Não pretendemos utilizar recursos externos.
 
 ## 13. Principais dificuldades esperadas
 
-Liste as dificuldades que o grupo acredita que poderá enfrentar.
+- movimentção do jogador e do cenário
+- marcar a pontuação
+- gameplay loop
 
-Exemplos:
-
-- movimentação do jogador;
-- colisão entre objetos;
-- controle de tempo;
-- criação do ranking;
-- organização do código;
-- uso do GitHub;
-- testes;
-- exibição de textos na tela.
-
-Dificuldades previstas:
-
-- Dificuldade 1:
-- Dificuldade 2:
-- Dificuldade 3:
 
 ## 14. Escopo mínimo para a entrega final
 
@@ -255,32 +140,12 @@ Descreva qual será a versão mínima aceitável do jogo.
 
 Esta seção é importante para evitar que o grupo escolha uma ideia grande demais.
 
-Exemplo:
-
-> A versão mínima do jogo terá um personagem controlado pelo teclado, obstáculos aparecendo na tela, sistema de vidas, sistema de pontuação e tela de fim de jogo.
-
 Escopo mínimo:
 
-> Escreva aqui.
+> Um personagem capaz de pular, uma pista com geração contínua de um tipo de obstáculo terrestre, detecção funcional de colisão, sistema de perda de vidas, exibição da pontuação atual na tela e uma tela simples de Game Over.
 
 ## 15. Possíveis melhorias, caso haja tempo
 
-Liste funcionalidades extras que o grupo poderá implementar se conseguir concluir o escopo mínimo.
-
-Exemplos:
-
-- tela inicial;
-- sons;
-- fases;
-- aumento de dificuldade;
-- ranking;
-- animações;
-- novos tipos de obstáculos;
-- diferentes personagens;
-- menu de pausa.
-
-Melhorias possíveis:
-
-- Melhoria 1:
-- Melhoria 2:
-- Melhoria 3:
+- Tela inicial
+- Sistema capaz de registrar a melhor pontuação e quando ela foi conquistada
+- Aumento de velocidade e dificuldade
