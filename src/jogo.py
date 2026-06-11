@@ -1,11 +1,12 @@
 import pygame
+import random
 
 from src.config import (
     LARGURA_TELA,
     ALTURA_TELA,
     FPS,
     TITULO_JOGO,
-    CINZA,
+    COR_FUNDO,
     CAMINHO_RECORDE,
     CAMINHO_SPRITES,
 )
@@ -25,7 +26,7 @@ from src.dados import (
 
 
 def executar_jogo():
-    """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
+    """Executa o loop principal do jogo e controla os estados: MENU, JOGANDO e GAME_OVER."""
     pygame.init()
     
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
@@ -33,125 +34,206 @@ def executar_jogo():
 
     relogio = pygame.time.Clock()
     rodando = True
+    
+    # --- MÁQUINA DE ESTADOS DO JOGO ---
+    estado = "MENU"  # Pode ser "MENU", "JOGANDO" ou "GAME_OVER"
 
-    # 1. Carregando as imagens recortadas do Spritesheet
-    # Jogador (Dinossauro) - Posição aproximada dele na folha branca
+    # 1. Carregando as imagens recortadas do Spritesheet (Região Branca)
     player_image = pegar_sprite(CAMINHO_SPRITES, x=40, y=45, width=67, height=68, scale=0.6)
-
-    # Obstáculo Terrestre (Cacto) - Substituindo a imagem antiga do morcego por um cacto real
     bat_image    = pegar_sprite(CAMINHO_SPRITES, x=339, y=379, width=62, height=60, scale=0.8)
-    
-    # Item Coletável (Pássaro/Pterodáctilo) - Substituindo a gema antiga por um obstáculo/item aéreo
     gem_image    = pegar_sprite(CAMINHO_SPRITES, x=342, y=252, width=44, height=62, scale=0.6)
-    
-    # 2. Criando a estrutura de Sprites usando Dicionários
+    imagem_original = pygame.image.load("assets/imagens/gameover.jpg").convert()
+    fundo_game_over = pygame.transform.scale(imagem_original, (LARGURA_TELA, ALTURA_TELA))
+
+    # 2. Criando a estrutura de Sprites
     jogador = {
         "imagem": player_image,
-        "rect": player_image.get_rect(topleft=(100, 100))
+        "rect": player_image.get_rect()
     }
-
-    gema = {
-        "imagem": gem_image,
-        "rect": gem_image.get_rect(topleft=(500, 300))
-    }
+    gema = {"imagem": gem_image, "rect": gem_image.get_rect()}
     
-    inimigo = {
-        "imagem": bat_image,
-        "rect": bat_image.get_rect(topleft=(200, 500))
-    }
+    # Lista dinâmica para os cactos aleatórios (Substitui o inimigo único)
+    inimigos_na_tela = []
 
-    velocidade = 5
+    # Configuração do surgimento (spawn) de obstáculos
+    tempo_ultimo_spawn = 0
+    intervalo_spawn = 1500  # Tempo em milissegundos
+
+    # Variáveis de Jogo
+    velocidade = 6  
     pontos = 0
     vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
-    # --- VARIÁVEIS DE FÍSICA PARA CORRIDA INFINITA ---
-    gravidade = 0.6
+    # Variáveis de Física do Pulo
+    gravidade_base = 0.6
     velocidade_y = 0
     esta_no_chao = True
     posicao_chao = ALTURA_TELA - 50  
 
-    # Posiciona o jogador fixo no chão à esquerda
+    # --- PREPARANDO AS POSIÇÕES INICIAIS ANTES DO LOOP ---
     jogador["rect"].bottom = posicao_chao
     jogador["rect"].x = 80
 
-    # Posiciona o inimigo (obstáculo) para surgir na ponta direita
-    inimigo["rect"].bottom = posicao_chao
-    inimigo["rect"].x = LARGURA_TELA
-
-    # Coloca a gema flutuando para ser coletada no ar durante o pulo
     gema["rect"].y = posicao_chao - 120
     gema["rect"].x = LARGURA_TELA + 300
+
+    # Configuração de Fontes (Para textos na tela)
+    fonte_titulo = pygame.font.SysFont("Arial", 60, bold=True)
+    fonte_texto = pygame.font.SysFont("Arial", 30)
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
         relogio.tick(FPS)
 
-        # Captura de Eventos do Sistema
+        # 1. CAPTURA DE EVENTOS DO SISTEMA
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
+            
+            if evento.type == pygame.KEYDOWN:
+                # Se estiver no MENU, aperta Espaço para começar de fato
+                if estado == "MENU":
+                    if evento.key == pygame.K_SPACE:
+                        estado = "JOGANDO"
+                        tempo_ultimo_spawn = pygame.time.get_ticks()  # Sincroniza o timer
+                
+                # Se perdeu, R reinicia ou ESC fecha
+                elif estado == "GAME_OVER":
+                    if evento.key == pygame.K_r:
+                        vidas = 3
+                        pontos = 0
+                        velocidade_y = 0
+                        esta_no_chao = True
+                        inimigos_na_tela.clear()  # Limpa os cactos antigos da tela
+                        jogador["rect"].bottom = posicao_chao
+                        jogador["rect"].x = 80
+                        gema["rect"].x = LARGURA_TELA + 300
+                        estado = "JOGANDO"
+                        tempo_ultimo_spawn = pygame.time.get_ticks()
+                    elif evento.key == pygame.K_ESCAPE:
+                        rodando = False
 
-        teclas = pygame.key.get_pressed()
+        # 2. ATUALIZAÇÃO DA LÓGICA (Apenas se o estado for JOGANDO)
+        if estado == "JOGANDO":
+            teclas = pygame.key.get_pressed()
 
-        # --- MECÂNICA DE PULO (BOTÃO ESPAÇO OU SETA PARA CIMA) ---
-        if (teclas[pygame.K_SPACE] or teclas[pygame.K_UP]) and esta_no_chao:
-            velocidade_y = -13  # Força do pulo (impulso para cima)
-            esta_no_chao = False
+            # --- MECÂNICA DE PULO VARIÁVEL ---
+            # Impulso inicial ao apertar o botão (no chão)
+            if (teclas[pygame.K_SPACE] or teclas[pygame.K_UP]) and esta_no_chao:
+                velocidade_y = -10  
+                esta_no_chao = False
 
-        # Aplicação da Gravidade
-        if not esta_no_chao:
-            velocidade_y += gravidade
-            jogador["rect"].y += velocidade_y
+            # No ar: Altera a gravidade se continuar segurando o botão
+            if not esta_no_chao:
+                if (teclas[pygame.K_SPACE] or teclas[pygame.K_UP]) and velocidade_y < 0:
+                    gravidade_atual = 0.45  # Mais leve = pula mais alto
+                else:
+                    gravidade_atual = 0.8  # Mais pesada = cai rápido ao soltar
 
-            # Detecta se pousou no chão
-            if jogador["rect"].bottom >= posicao_chao:
+                velocidade_y += gravidade_atual
+                jogador["rect"].y += velocidade_y
+
+                # Detecta colisão com a linha do chão
+                if jogador["rect"].bottom >= posicao_chao:
+                    jogador["rect"].bottom = posicao_chao
+                    velocidade_y = 0
+                    esta_no_chao = True
+            else:
                 jogador["rect"].bottom = posicao_chao
-                velocidade_y = 0
-                esta_no_chao = True
+                jogador["rect"].x = 80
 
-        # --- MOVIMENTAÇÃO DOS OBSTÁCULOS E ITENS (CORRENDO DA DIREITA PARA ESQUERDA) ---
-        inimigo["rect"].x -= velocidade
-        gema["rect"].x -= velocidade
+            # --- MECANISMO DE SPAWN ALEATÓRIO DE CACTOS ---
+            tempo_atual = pygame.time.get_ticks()
+            if tempo_atual - tempo_ultimo_spawn > intervalo_spawn:
+                # Sorteia se vem 1 cacto sozinho ou 2 cactos grudados
+                tipo_spawn = random.choice(["UNICO", "UNICO", "UNICO", "DUPLO"])
+                
+                if tipo_spawn == "UNICO":
+                    novo_cacto = bat_image.get_rect()
+                    novo_cacto.bottom = posicao_chao
+                    novo_cacto.x = LARGURA_TELA
+                    inimigos_na_tela.append(novo_cacto)
+                
+                elif tipo_spawn == "DUPLO":
+                    cacto1 = bat_image.get_rect()
+                    cacto1.bottom = posicao_chao
+                    cacto1.x = LARGURA_TELA
+                    
+                    cacto2 = bat_image.get_rect()
+                    cacto2.bottom = posicao_chao
+                    cacto2.x = LARGURA_TELA + cacto1.width - 5  # Cola os dois cactos
+                    
+                    inimigos_na_tela.append(cacto1)
+                    inimigos_na_tela.append(cacto2)
+                
+                # Gera uma distância variada para o próximo grupo
+                intervalo_spawn = random.randint(1000, 2200)
+                tempo_ultimo_spawn = tempo_atual
 
-        # Se o inimigo sair da tela pela esquerda, ele renasce na direita
-        if inimigo["rect"].right < 0:
-            inimigo["rect"].x = LARGURA_TELA + 50
-            pontos = calcular_pontos(pontos, 5) # Pontos por desviar
+            # --- ATUALIZAÇÃO DA GEMA COLETÁVEL ---
+            gema["rect"].x -= velocidade
+            if gema["rect"].right < 0:
+                gema["rect"].x = LARGURA_TELA + random.randint(400, 900)
+                gema["rect"].y = posicao_chao - 120
 
-        # Se a gema sair da tela, renasce na direita
-        if gema["rect"].right < 0:
-            gema["rect"].x = LARGURA_TELA + 400
+            if verificar_colisao(jogador["rect"], gema["rect"]):
+                pontos = calcular_pontos(pontos, 15)
+                gema["rect"].x = LARGURA_TELA + 600  
 
-        # --- VERIFICAÇÃO DE COLISÕES ---
-        # Colisão com a Gema (Item Colecionável)
-        if verificar_colisao(jogador["rect"], gema["rect"]):
-            pontos = calcular_pontos(pontos, 15) # Bônus por pegar o item
-            gema["rect"].x = LARGURA_TELA + 600  # Joga ela de volta para trás
+            # --- ATUALIZAÇÃO E COLISÃO DOS CACTOS (LISTA) ---
+            for cacto_rect in inimigos_na_tela[:]:
+                cacto_rect.x -= velocidade
+                
+                # Se o Dino colidir com o cacto
+                if verificar_colisao(jogador["rect"], cacto_rect):
+                    vidas = tomar_dano(vidas, 1)
+                    inimigos_na_tela.remove(cacto_rect)
+                    continue
+                
+                # Se passou ileso, ganha pontos por desviar
+                if cacto_rect.right < 0:
+                    pontos = calcular_pontos(pontos, 5)
+                    inimigos_na_tela.remove(cacto_rect)
 
-        # Colisão com o Inimigo (Obstáculo)
-        if verificar_colisao(jogador["rect"], inimigo["rect"]):
-            vidas = tomar_dano(vidas, 1)
-            inimigo["rect"].x = LARGURA_TELA + 100 # Afasta o inimigo para não perder tudo de uma vez
+            # --- VERIFICAÇÃO DE FIM DE JOGO E RECORDE ---
+            if jogador_perdeu(vidas):
+                if pontos > recorde:
+                    recorde = pontos
+                    salvar_recorde(CAMINHO_RECORDE, recorde)
+                estado = "GAME_OVER"
 
-        # Regras de fim de jogo e recorde
-        if jogador_perdeu(vidas):
-            rodando = False
+        # 3. RENDERIZAÇÃO (DESENHO NA TELA)
+        tela.fill(COR_FUNDO)
 
-        if pontos > recorde:
-            recorde = pontos
-            salvar_recorde(CAMINHO_RECORDE, recorde)
+        if estado == "MENU":
+            txt_titulo = fonte_titulo.render("Sonica Runner", True, (83, 83, 83))
+            txt_instrucao = fonte_texto.render("Aperte ESPAÇO para Começar", True, (100, 100, 100))
+            txt_recorde = fonte_texto.render(f"Melhor Pontuação: {recorde}", True, (50, 50, 50))
+            
+            tela.blit(txt_titulo, (LARGURA_TELA // 2 - 185, ALTURA_TELA // 2 - 80))
+            tela.blit(txt_instrucao, (LARGURA_TELA // 2 - 180, ALTURA_TELA // 2 + 20))
+            tela.blit(txt_recorde, (LARGURA_TELA // 2 - 140, ALTURA_TELA // 2 + 80))
 
-        pygame.display.set_caption(
-            f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
-        )
-
-        tela.fill(CINZA)
-
-        # Desenhando os elementos na tela passando a imagem e o rect de cada dicionário
-        tela.blit(gema["imagem"], gema["rect"])
-        tela.blit(inimigo["imagem"], inimigo["rect"])
-        tela.blit(jogador["imagem"], jogador["rect"])
+        elif estado == "JOGANDO":
+            # Desenha gema, cactos ativos e o jogador
+            tela.blit(gema["imagem"], gema["rect"])
+            for cacto_rect in inimigos_na_tela:
+                tela.blit(bat_image, cacto_rect)
+            tela.blit(jogador["imagem"], jogador["rect"])
+            
+            # Legenda de monitoramento no título da janela
+            pygame.display.set_caption(f"Pontos: {pontos} | Vidas: {vidas} | Recorde: {recorde}")
+            
+        elif estado == "GAME_OVER":
+            tela.blit(fundo_game_over, (0, 0)) 
+            txt_fim = fonte_titulo.render("GAME OVER", True, (255, 60, 60))
+            txt_pts = fonte_texto.render(f"Pontos Finais: {pontos}", True, (200, 200, 200))
+            txt_reset = fonte_texto.render("Aperte R para Reiniciar ou ESC para Sair", True, (255, 255, 255))
+            
+            tela.blit(txt_fim, (LARGURA_TELA // 2 - 160, ALTURA_TELA // 2 - 80))
+            tela.blit(txt_pts, (LARGURA_TELA // 2 - 100, ALTURA_TELA // 2))
+            tela.blit(txt_reset, (LARGURA_TELA // 2 - 250, ALTURA_TELA // 2 + 60))
 
         pygame.display.flip()
 
