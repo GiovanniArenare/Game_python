@@ -40,8 +40,8 @@ def executar_jogo():
     estado = "MENU"  # Pode ser "MENU", "JOGANDO" ou "GAME_OVER"
 
     # 2. CARREGAMENTO DE IMAGENS E FUNDOS
-    player_image = pegar_sprite(CAMINHO_SPRITES, x=40, y=46, width=67, height=68, scale=0.8)
-    bat_image    = pegar_sprite(CAMINHO_SPRITES, x=339, y=379, width=62, height=60, scale=1)
+    player_image = pegar_sprite(CAMINHO_SPRITES, x=42, y=47, width=64, height=65, scale=0.8)
+    bat_image    = pegar_sprite(CAMINHO_SPRITES, x=339, y=379, width=60, height=60, scale=1)
     gem_image    = pegar_sprite(CAMINHO_SPRITES, x=342, y=252, width=44, height=62, scale=0.6)
     nuvem_image  = pegar_sprite(CAMINHO_SPRITES, x=760, y=246, width=208, height=91, scale=0.6)
     
