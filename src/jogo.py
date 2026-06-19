@@ -27,6 +27,8 @@ from src.dados import (
 
 def executar_jogo():
     """Executa o loop principal do jogo e controla os estados: MENU, JOGANDO e GAME_OVER."""
+    # --- CONFIGURAÇÃO DE BUFFER (Evita atraso no som do pulo e do dano) ---
+    pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
     pygame.mixer.init()
     
@@ -61,11 +63,22 @@ def executar_jogo():
     try:
         som_coleta = pygame.mixer.Sound("assets/sons/coin.wav")
         som_dano = pygame.mixer.Sound("assets/sons/oof.wav")
+        som_pulo = pygame.mixer.Sound("assets/sons/jump.wav")         # Novo som de pulo
+        som_gameover = pygame.mixer.Sound("assets/sons/gameover.wav") # Novo som de game over
+        
         som_coleta.set_volume(0.5)
         som_dano.set_volume(0.6)
+        som_pulo.set_volume(0.5)
+        som_gameover.set_volume(0.6)
+        
+        # --- CARREGAR E TOCAR A MÚSICA DE FUNDO EM LOOP (-1) ---
+        pygame.mixer.music.load("assets/sons/musica_fundo.mp3")
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(-1) # O -1 faz ela tocar infinitamente através dos estados
+        
     except pygame.error:
-        print("Aviso: Sons não encontrados. O jogo rodará mudo.")
-        som_coleta = som_dano = None
+        print("Aviso: Arquivos de áudio não encontrados em assets/sons/. O jogo rodará mudo.")
+        som_coleta = som_dano = som_pulo = som_gameover = None
 
     # 4. ESTRUTURAS DE SPRITES
     jogador = {"imagem": player_image, "rect": player_image.get_rect()}
@@ -123,6 +136,11 @@ def executar_jogo():
                         jogador["rect"].bottom = posicao_chao
                         gema["rect"].x = LARGURA_TELA + 300
                         nuvem["rect"].x = LARGURA_TELA
+                        
+                        # --- REINICIAR A MÚSICA DE FUNDO AO RECOMEÇAR O JOGO ---
+                        if pygame.mixer.music.get_busy() == False:
+                            pygame.mixer.music.play(-1)
+                            
                         estado = "JOGANDO"
                         tempo_inicio = pygame.time.get_ticks()
                         tempo_sobrevivencia = 0
@@ -144,6 +162,9 @@ def executar_jogo():
             if (teclas[pygame.K_SPACE] or teclas[pygame.K_UP]) and esta_no_chao:
                 velocidade_y = -10  
                 esta_no_chao = False
+                # --- TOCAR SOM DE PULO ---
+                if som_pulo: 
+                    som_pulo.play()
 
             if not esta_no_chao:
                 gravidade = 0.35 if ((teclas[pygame.K_SPACE] or teclas[pygame.K_UP]) and velocidade_y < 0) else 0.75
@@ -190,6 +211,12 @@ def executar_jogo():
 
             if jogador_perdeu(vidas):
                 if pontos > recorde: salvar_recorde(CAMINHO_RECORDE, pontos)
+                
+                # --- PARAR MÚSICA E TOCAR SOM DE GAME OVER UMA VEZ ---
+                pygame.mixer.music.stop()
+                if som_gameover: 
+                    som_gameover.play()
+                    
                 estado = "GAME_OVER"
 
         # --- RENDERIZAÇÃO ---
@@ -278,32 +305,17 @@ def executar_jogo():
             tela.blit(texto_pontos, (pos_pontos_x, pos_pontos_y))
             
         elif estado == "GAME_OVER":
-
             tela.blit(fundo_game_over, (0, 0))
-
             txt_fim = fonte_titulo.render("GAME OVER", True, (255, 60, 60))
-
             txt_pts = fonte_texto.render(f"Pontos Finais: {pontos}", True, (255, 255, 255))
-
             txt_tempo = fonte_texto.render(f"Tempo Vivo: {tempo_sobrevivencia}s", True, (255, 255, 255))
-
             txt_reset = fonte_texto.render("Aperte R para Reiniciar \nOu ESC para Sair", True, (255, 255, 255))
 
-           
-
             tela.blit(txt_fim, (LARGURA_TELA // 2 - 385, ALTURA_TELA // 2 - 200))
-
             tela.blit(txt_pts, (LARGURA_TELA // 2 - 360, ALTURA_TELA // 2 - 100))
-
             tela.blit(txt_tempo, (LARGURA_TELA // 2 - 360, ALTURA_TELA // 2 - 50))
-
             tela.blit(txt_reset, (LARGURA_TELA // 2 - 360, ALTURA_TELA // 2 ))
-
-
 
         pygame.display.flip()
 
-
-
-    pygame.quit() 
-
+    pygame.quit()
