@@ -9,6 +9,9 @@ from src.config import (
     COR_FUNDO,
     CAMINHO_RECORDE,
     CAMINHO_SPRITES,
+    VELOCIDADE_INICIAL,
+    VELOCIDADE_MAXIMA,
+    AUMENTO_POR_PONTO,
 )
 
 from src.funcoes import (
@@ -87,7 +90,7 @@ def executar_jogo():
     inimigos_na_tela = []
 
     # VARIÁVEIS DE JOGO
-    velocidade = 6  
+    velocidade = VELOCIDADE_INICIAL  
     pontos = 0
     vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
@@ -130,6 +133,7 @@ def executar_jogo():
                     if evento.key == pygame.K_r:
                         vidas = 3
                         pontos = 0
+                        velocidade = VELOCIDADE_INICIAL
                         velocidade_y = 0
                         esta_no_chao = True
                         inimigos_na_tela.clear()
@@ -151,6 +155,14 @@ def executar_jogo():
         if estado == "JOGANDO":
             tempo_sobrevivencia = (pygame.time.get_ticks() - tempo_inicio) // 1000
             teclas = pygame.key.get_pressed()
+
+            # --- VELOCIDADE PROGRESSIVA ---
+            # A velocidade cresce com a pontuação (quanto mais o jogador avança, mais rápido fica)
+            velocidade = limitar_valor(
+                VELOCIDADE_INICIAL + pontos * AUMENTO_POR_PONTO,
+                VELOCIDADE_INICIAL,
+                VELOCIDADE_MAXIMA,
+            )
 
             # Movimento Nuvem
             nuvem["rect"].x -= velocidade_nuvem

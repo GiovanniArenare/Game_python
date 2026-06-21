@@ -8,6 +8,10 @@ TITULO_JOGO = "Sonica Runner"
 GRAVIDADE = 0.6
 VELOCIDADE_INICIAL = 5
 
+# --- Aumento progressivo de velocidade ---
+VELOCIDADE_MAXIMA = 16          
+AUMENTO_POR_PONTO = 0.03        
+
 COR_FUNDO = (200, 200, 200)     
 COR_OBSTACULO = (150, 50, 50) 
 COR_TEXTO = (50, 50, 50)
